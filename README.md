@@ -9,10 +9,14 @@ You can of course clone the repo, or you can run the docker image from 'packages
 
 ### Running the Docker image
 1. If you're not yet logged in, authenticate with github container registry.
-    ```bash
+    ```pwsh
     echo "YOUR_PERSONAL_ACCESS_TOKEN" | docker login ghcr.io -u YOUR_GITHUB_USERNAME --password-stdin
    ```
-2. pull and run the image.
-   ```bash
-    docker run -p 8080:8080 -p 8081:8081 ghcr.io/mbjd05/ashamed-backend:latest
+2. If you do not yet have one, generate a self-signed development SSL certificate and trust it (pwsh)
+    ```pwsh
+    dotnet dev-certs https -ep $HOME\.aspnet\https\aspnetapp.pfx -p YOUR_CERT_PASSWORD ; dotnet dev-certs https --trust
+   ```
+4. pull and run the image.
+   ```pwsh
+    docker run --pull always --rm -it -p 443:443 -e ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx -e ASPNETCORE_Kestrel__Certificates__Default__Password="YOUR_CERT_PASSWORD" -v $HOME\.aspnet\https:/https/ ghcr.io/mbjd05/ashamed-backend:latest
    ```
