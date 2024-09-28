@@ -11,7 +11,7 @@ env:
   SOLUTION_NAME: 'AshamedApp'
 
 jobs:
-  build-and-test:
+  build:
     runs-on: ubuntu-latest
     steps:
       # Checkout the repository
@@ -32,12 +32,26 @@ jobs:
       - name: Build Solution 🔨
         run: dotnet build ${{ env.SOLUTION_NAME }}.sln -c Release --no-restore
 
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout the repository
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      # Setup .NET SDK
+      - name: Setup .NET 📦
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
       # Run tests
       - name: Run Tests ✅
         run: dotnet test ${{ env.SOLUTION_NAME }}.Tests/${{ env.SOLUTION_NAME }}.Tests.csproj -c Release --no-build --verbosity normal
 
   publish:
-    needs: build-and-test
+    needs: test
     runs-on: ubuntu-latest
     steps:
       # Checkout the repository
