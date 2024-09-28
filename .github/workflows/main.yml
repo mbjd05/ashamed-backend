@@ -44,14 +44,17 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
+      # Publish the application to the 'publish' directory
+      - name: Publish Application 🔨
+        run: dotnet publish "AshamedApp.API/AshamedApp.API.csproj" -c Release -o ./publish /p:UseAppHost=false
+
       # Build Docker image
       - name: Build Docker Image 🐳
         run: docker build -t ${{ env.IMAGE_NAME }} .
 
       # Log in to GitHub Container Registry
       - name: Log in to GitHub Container Registry 🔑
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-
+        run: echo "${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
       # Push Docker image to the registry
       - name: Push Docker Image 🚢
         run: |
