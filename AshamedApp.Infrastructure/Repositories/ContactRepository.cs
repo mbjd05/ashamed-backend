@@ -1,6 +1,6 @@
-using ContactsApplication.Application.DTOs;
-using ContactsApplication.Application.Repositories;
-using ContactsApplication.Domain.Models;
+using AshamedApp.Application.DTOs;
+using AshamedApp.Application.Repositories;
+using AshamedApp.Domain.Models;
 
 namespace ContactsApplication.Infrastructure.Repositories;
 

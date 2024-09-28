@@ -1,4 +1,4 @@
-namespace ContactsApplication.Application.DTOs;
+namespace AshamedApp.Application.DTOs;
 
 public class GetAllContactsResponse(IEnumerable<ContactDto> contacts)
 {

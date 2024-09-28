@@ -1,9 +1,8 @@
-using System.Dynamic;
-using ContactsApplication.Application.DTOs;
-using ContactsApplication.Application.Services;
+using AshamedApp.Application.DTOs;
+using AshamedApp.Application.Services;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ContactsApplication.API.Controllers;
+namespace AshamedApp.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]

@@ -1,6 +1,6 @@
-using ContactsApplication.Application.DTOs;
+using AshamedApp.Application.DTOs;
 
-namespace ContactsApplication.Application.Repositories;
+namespace AshamedApp.Application.Repositories;
 
 public interface IContactRepository
 {

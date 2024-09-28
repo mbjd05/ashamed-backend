@@ -1,6 +1,6 @@
-using ContactsApplication.Application.DTOs;
+using AshamedApp.Application.DTOs;
 
-namespace ContactsApplication.Application.Services;
+namespace AshamedApp.Application.Services;
 
 public interface IContactManagerService
 {

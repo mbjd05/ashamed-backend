@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ContactsApplication.API", "ContactsApplication.API\ContactsApplication.API.csproj", "{49513CFF-AC2D-4ECF-AB85-EB24B0E5D9A6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AshamedApp.API", "AshamedApp.API\AshamedApp.API.csproj", "{49513CFF-AC2D-4ECF-AB85-EB24B0E5D9A6}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{66050EA7-86F4-4545-9FA9-475F9BB0F09E}"
 EndProject
@@ -8,13 +8,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Presentation", "Presentatio
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{FE5051A9-3E76-48EC-9244-A650474633E8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ContactsApplication.Domain", "ContactsApplication.Domain\ContactsApplication.Domain.csproj", "{78834076-2E5F-48B1-8FCD-F3BA24969E56}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AshamedApp.Domain", "AshamedApp.Domain\AshamedApp.Domain.csproj", "{78834076-2E5F-48B1-8FCD-F3BA24969E56}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ContactsApplication.Application", "ContactsApplication.Application\ContactsApplication.Application.csproj", "{66523A2E-3C2A-4875-8202-168E77C1C8E1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AshamedApp.Application", "AshamedApp.Application\AshamedApp.Application.csproj", "{66523A2E-3C2A-4875-8202-168E77C1C8E1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{FC156342-17F4-4112-8C23-FF6687E2336B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ContactsApplication.Infrastructure", "ContactsApplication.Infrastructure\ContactsApplication.Infrastructure.csproj", "{FFC72AC6-6E72-4A26-9517-D89283E80256}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AshamedApp.Infrastructure", "AshamedApp.Infrastructure\AshamedApp.Infrastructure.csproj", "{FFC72AC6-6E72-4A26-9517-D89283E80256}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

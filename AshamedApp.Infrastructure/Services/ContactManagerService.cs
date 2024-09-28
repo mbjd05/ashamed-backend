@@ -1,6 +1,6 @@
-using ContactsApplication.Application.DTOs;
-using ContactsApplication.Application.Repositories;
-using ContactsApplication.Application.Services;
+using AshamedApp.Application.DTOs;
+using AshamedApp.Application.Repositories;
+using AshamedApp.Application.Services;
 
 namespace ContactsApplication.Infrastructure.Services;
 

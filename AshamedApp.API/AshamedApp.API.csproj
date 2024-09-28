@@ -12,8 +12,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\ContactsApplication.Application\ContactsApplication.Application.csproj" />
-      <ProjectReference Include="..\ContactsApplication.Infrastructure\ContactsApplication.Infrastructure.csproj" />
+      <ProjectReference Include="..\AshamedApp.Application\AshamedApp.Application.csproj" />
+      <ProjectReference Include="..\AshamedApp.Infrastructure\AshamedApp.Infrastructure.csproj" />
     </ItemGroup>
 
 </Project>

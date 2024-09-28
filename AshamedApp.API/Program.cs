@@ -1,5 +1,5 @@
-using ContactsApplication.Application.Repositories;
-using ContactsApplication.Application.Services;
+using AshamedApp.Application.Repositories;
+using AshamedApp.Application.Services;
 using ContactsApplication.Infrastructure.Repositories;
 using ContactsApplication.Infrastructure.Services;
 
