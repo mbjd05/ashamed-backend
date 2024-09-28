@@ -10,7 +10,7 @@ You can of course clone the repo, or you can run the docker image from 'packages
 ### Running the Docker image
 1. If you're not yet logged in, authenticate with github container registry.
     ```bash
-    echo "<YOUR_PERSONAL_ACCESS_TOKEN>" | docker login ghcr.io -u <YOUR_GITHUB_USERNAME> --password-stdin
+    echo "YOUR_PERSONAL_ACCESS_TOKEN" | docker login ghcr.io -u YOUR_GITHUB_USERNAME --password-stdin
    ```
 2. pull and run the image.
    ```bash
