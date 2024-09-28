@@ -4,6 +4,11 @@ on:
   push:
     branches:
       - main
+    paths-ignore:
+      - .github/workflows/*
+      - README.md
+      - .gitignore
+      - .devcontainer/*
 
 env:
   IMAGE_NAME: ${{ github.repository }}
