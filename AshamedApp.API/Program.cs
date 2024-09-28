@@ -29,4 +29,5 @@ app.UseRouting();
 app.UseAuthorization();
 
 app.MapControllers();
+app.Urls.Add("https://+:443");
 app.Run();
