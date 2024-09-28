@@ -8,6 +8,7 @@ on:
 env:
   DOTNET_VERSION: '8.0.x'
   IMAGE_NAME: ${{ github.repository }}
+  SOLUTION_NAME: 'AshamedApp'
 
 jobs:
   build:
@@ -22,21 +23,21 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Restore Dependencies 🔄
-        run: dotnet restore WebApi
+        run: dotnet restore ${{ env.SOLUTION_NAME }}
 
       - name: Build Solution 🔨
-        run: dotnet build WebApi -c Release --no-restore
+        run: dotnet build ${{ env.SOLUTION_NAME }} -c Release --no-restore
 
       - name: Run Tests ✅
-        run: dotnet test WebApi --no-build --verbosity normal
+        run: dotnet test ${{ env.SOLUTION_NAME }}.Tests --no-build --verbosity normal
 
       - name: Build Docker Image 🐳
-        if: success() # This ensures the Docker build only happens if tests pass
+        if: success()
         run: docker build -t ${{ env.IMAGE_NAME }} .
 
       - name: Log in to GitHub Container Registry 🔑
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
       - name: Push Docker Image 🚢
-        if: success() # This ensures the Docker push only happens if tests pass
-        run: docker push ghcr.io/${{ github.repository }}/webapi:latest
+        if: success()
+        run: docker push ghcr.io/${{ github.repository }}:latest
