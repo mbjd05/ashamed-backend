@@ -44,6 +44,10 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
+      # Publish the application to the 'publish' directory
+      - name: Publish Application 🔨
+        run: dotnet publish "AshamedApp.API/AshamedApp.API.csproj" -c Release -o ./publish /p:UseAppHost=false
+
       # Build Docker image
       - name: Build Docker Image 🐳
         run: docker build -t ${{ env.IMAGE_NAME }} .
