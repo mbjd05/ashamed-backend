@@ -6,7 +6,7 @@ on:
       - dev
     paths-ignore:
       - .github/workflows/*
-      - README.md
+      # - README.md
       - .gitignore
       - .devcontainer/*
 
