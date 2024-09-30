@@ -1,0 +1,43 @@
+name: Dev Branch CI with Coveralls 🧪
+
+on:
+  push:
+    branches:
+      - dev
+    paths-ignore:
+      - .github/workflows/*
+      - README.md
+      - .gitignore
+      - .devcontainer/*
+
+env:
+  DOTNET_VERSION: '8.0.x'
+  SOLUTION_NAME: 'AshamedApp'
+
+jobs:
+  test-and-coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Setup .NET 📦
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore Dependencies 🔄
+        run: dotnet restore ${{ env.SOLUTION_NAME }}.sln
+
+      - name: Build Solution 🔨
+        run: dotnet build ${{ env.SOLUTION_NAME }}.sln -c Release --no-restore
+
+      - name: Run Tests with Coverage 🧪
+        run: dotnet test ${{ env.SOLUTION_NAME }}.Tests/${{ env.SOLUTION_NAME }}.Tests.csproj -c Release --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=lcov /p:CoverletOutput=./lcov.info
+
+      - name: Coveralls GitHub Action
+        uses: coverallsapp/github-action@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          file: ${{ env.SOLUTION_NAME }}.Tests/lcov.info
+          format: lcov
