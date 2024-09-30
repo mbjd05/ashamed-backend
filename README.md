@@ -21,4 +21,4 @@ You can of course clone the repo, or you can run the docker image from 'packages
     docker run --pull always --rm -it -p 443:443 -e ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx -e ASPNETCORE_Kestrel__Certificates__Default__Password="YOUR_CERT_PASSWORD" -v $HOME\.aspnet\https:/https/ ghcr.io/mbjd05/ashamed-backend:latest
    ```
    
-Testing code coverage!
+Testing code coverage
