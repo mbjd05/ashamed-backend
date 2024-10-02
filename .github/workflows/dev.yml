@@ -1,4 +1,4 @@
-name: Dev Branch CI with Coveralls 🧪
+name: Dev branch CI with code coverage report 🧪
 
 on:
   push:
