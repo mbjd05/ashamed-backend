@@ -1,4 +1,4 @@
-name: Dev Branch CI with Coveralls 🧪
+name: Dev branch testing! 🧪
 
 on:
   push:
@@ -9,6 +9,7 @@ on:
       - README.md
       - .gitignore
       - .devcontainer/*
+  workflow_dispatch:
 
 env:
   DOTNET_VERSION: '8.0.x'
@@ -19,10 +20,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup .NET 📦
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
@@ -30,10 +31,10 @@ jobs:
         run: dotnet restore ${{ env.SOLUTION_NAME }}.sln
 
       - name: Build Solution 🔨
-        run: dotnet build ${{ env.SOLUTION_NAME }}.sln -c Release --no-restore
+        run: dotnet build ${{ env.SOLUTION_NAME }}.sln --no-restore
 
       - name: Run Tests with Coverage 🧪
-        run: dotnet test ${{ env.SOLUTION_NAME }}.Tests/${{ env.SOLUTION_NAME }}.Tests.csproj -c Release --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=lcov /p:CoverletOutput=./lcov.info
+        run: dotnet test ${{ env.SOLUTION_NAME }}.Tests/${{ env.SOLUTION_NAME }}.Tests.csproj --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=lcov /p:CoverletOutput=./lcov.info
 
       - name: Coveralls GitHub Action
         uses: coverallsapp/github-action@v2

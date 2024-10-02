@@ -1,3 +1,5 @@
+![coverage status main](https://img.shields.io/coveralls/github/mbjd05/ashamed-backend/main?label=coverage%20(main))  ![coverage status dev](https://img.shields.io/coveralls/github/mbjd05/ashamed-backend/dev?label=coverage%20(dev))
+
 # A.S.H.A.M.E.D.: A Smart Home Aggregated MEasurements Dashboard
 The backend repository for the A.S.H.A.M.E.D. project.
 
@@ -20,5 +22,7 @@ You can of course clone the repo, or you can run the docker image from 'packages
    ```pwsh
     docker run --pull always --rm -it -p 443:443 -e ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx -e ASPNETCORE_Kestrel__Certificates__Default__Password="YOUR_CERT_PASSWORD" -v $HOME\.aspnet\https:/https/ ghcr.io/mbjd05/ashamed-backend:latest
    ```
-   
-Testing code coverage
+
+
+
+
