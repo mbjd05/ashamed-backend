@@ -13,6 +13,18 @@ builder.Services.AddScoped<IContactManagerService, ContactManagerService>();
 builder.Services.AddScoped<IContactRepository, ContactRepository>();
 builder.Services.AddControllers();
 
+// Add CORS configuration
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend",
+        builder =>
+        {
+            builder.WithOrigins("http://localhost:5173")
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -24,6 +36,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+// Use CORS
+app.UseCors("AllowFrontend");
 
 app.UseRouting();
 app.UseAuthorization();
@@ -31,3 +45,4 @@ app.UseAuthorization();
 app.MapControllers();
 app.Urls.Add("https://+:443");
 app.Run();
+
