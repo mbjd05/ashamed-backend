@@ -1,7 +1,7 @@
 using AshamedApp.Application.Repositories;
 using AshamedApp.Application.Services;
-using ContactsApplication.Infrastructure.Repositories;
-using ContactsApplication.Infrastructure.Services;
+using AshamedApp.Application.Services.Implementations;
+using AshamedApp.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
