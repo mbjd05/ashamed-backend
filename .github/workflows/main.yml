@@ -9,6 +9,7 @@ on:
       - README.md
       - .gitignore
       - .devcontainer/*
+  workflow_dispatch:
 
 env:
   IMAGE_NAME: ${{ github.repository }}
@@ -16,51 +17,49 @@ env:
   SOLUTION_NAME: 'AshamedApp'
 
 jobs:
-  build-and-test:
+  build-test-and-coverage:
     runs-on: ubuntu-latest
     steps:
-      # Checkout the repository
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      # Setup .NET SDK
       - name: Setup .NET 📦
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      # Restore project dependencies
       - name: Restore Dependencies 🔄
         run: dotnet restore ${{ env.SOLUTION_NAME }}.sln
 
-      # Build the solution
       - name: Build Solution 🔨
         run: dotnet build ${{ env.SOLUTION_NAME }}.sln -c Release --no-restore
 
-      # Run tests
-      - name: Run Tests ✅
-        run: dotnet test ${{ env.SOLUTION_NAME }}.Tests/${{ env.SOLUTION_NAME }}.Tests.csproj -c Release --no-build --verbosity normal
+      - name: Run Tests with Coverage 🧪
+        run: dotnet test ${{ env.SOLUTION_NAME }}.Tests/${{ env.SOLUTION_NAME }}.Tests.csproj -c Release --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=lcov /p:CoverletOutput=./lcov.info
+
+      - name: Coveralls GitHub Action
+        uses: coverallsapp/github-action@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          file: ${{ env.SOLUTION_NAME }}.Tests/lcov.info
+          format: lcov
 
   publish:
-    needs: build-and-test
+    needs: build-test-and-coverage
     runs-on: ubuntu-latest
     steps:
-      # Checkout the repository
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      # Publish the application to the 'publish' directory
       - name: Publish Application 🔨
         run: dotnet publish "AshamedApp.API/AshamedApp.API.csproj" -c Release -o ./publish /p:UseAppHost=false
 
-      # Build Docker image
       - name: Build Docker Image 🐳
         run: docker build -t ${{ env.IMAGE_NAME }} .
 
-      # Log in to GitHub Container Registry
       - name: Log in to GitHub Container Registry 🔑
         run: echo "${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-      # Push Docker image to the registry
+
       - name: Push Docker Image 🚢
         run: |
           docker tag ${{ env.IMAGE_NAME }}:latest ghcr.io/${{ github.repository }}:latest
