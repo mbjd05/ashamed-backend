@@ -1,8 +1,10 @@
 using AshamedApp.Application.DTOs;
+using AshamedApp.Domain.Models;
 
 namespace AshamedApp.Application.Repositories;
 
 public interface IMqttMessageRepository
 {
-    IEnumerable<MqttMessageDTO> GetAllMqttMessages(string topic);
+    GetAllMqttMessagesResponse GetAllMqttMessages(string topic);
+    void AddMessage(MqttMessage message);
 }
