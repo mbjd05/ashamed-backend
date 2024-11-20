@@ -11,6 +11,10 @@ on:
       - .devcontainer/*
   workflow_dispatch:
 
+permissions:
+  contents: write
+  actions: write
+
 env:
   IMAGE_NAME: ${{ github.repository }}
   DOTNET_VERSION: '8.0.x'
