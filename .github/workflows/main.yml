@@ -14,6 +14,7 @@ on:
 permissions:
   contents: write
   actions: write
+  security-events: write
 
 env:
   IMAGE_NAME: ${{ github.repository }}
