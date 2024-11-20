@@ -1,4 +1,4 @@
-![coverage status main](https://img.shields.io/coveralls/github/mbjd05/ashamed-backend/main?label=coverage%20(main))  ![coverage status dev](https://img.shields.io/coveralls/github/mbjd05/ashamed-backend/dev?label=coverage%20(dev))
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/82552e4d6ab242dabaad89ddb2bb2c1b)](https://app.codacy.com/gh/mbjd05/ashamed-backend/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade) ![coverage status main](https://img.shields.io/coveralls/github/mbjd05/ashamed-backend/main?label=coverage%20(main))  ![coverage status dev](https://img.shields.io/coveralls/github/mbjd05/ashamed-backend/dev?label=coverage%20(dev))
 
 # A.S.H.A.M.E.D.: A Smart Home Aggregated MEasurements Dashboard
 The backend repository for the A.S.H.A.M.E.D. project.
