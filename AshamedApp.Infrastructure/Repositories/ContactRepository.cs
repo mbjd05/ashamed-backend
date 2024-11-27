@@ -1,8 +1,7 @@
 using AshamedApp.Application.DTOs;
 using AshamedApp.Application.Repositories;
-using AshamedApp.Domain.Models;
 
-namespace ContactsApplication.Infrastructure.Repositories;
+namespace AshamedApp.Infrastructure.Repositories;
 
 public class ContactRepository() : IContactRepository
     {

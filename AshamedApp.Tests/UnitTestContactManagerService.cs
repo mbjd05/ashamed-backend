@@ -1,6 +1,6 @@
 using AshamedApp.Application.DTOs;
 using AshamedApp.Application.Repositories;
-using ContactsApplication.Infrastructure.Services;
+using AshamedApp.Application.Services.Implementations;
 using Moq;
 
 namespace AshamedApp.Tests
