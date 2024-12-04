@@ -14,16 +14,16 @@ public class MqttMessageRepository(ApplicationDbContext dbContext) : IMqttMessag
         return new GetAllMqttMessagesResponse(mqttMessages);
     }
 
-    public void AddMessage(MqttMessage message)
+    public async Task AddMessageAsync(MqttMessageDto message)
+{
+    dbContext.MqttMessages.Add(new MqttMessageDto
     {
-        dbContext.MqttMessages.Add(new MqttMessageDto
-        {
-            Topic = message.Topic,
-            Payload = SanitizePayload(message.Payload),
-            Timestamp = message.Timestamp
-        });
-        dbContext.SaveChanges();
-    }
+        Topic = message.Topic,
+        Payload = SanitizePayload(message.Payload),
+        Timestamp = message.Timestamp
+    });
+    await dbContext.SaveChangesAsync();
+}
 
     private string SanitizePayload(string payload)
     {
@@ -31,9 +31,6 @@ public class MqttMessageRepository(ApplicationDbContext dbContext) : IMqttMessag
         {
             return payload;
         }
-
-        // Replace Infinity, NaN with default value or remove them
-        // You can choose to replace "Infinity" with "0" or throw an exception depending on the business logic
         payload = Regex.Replace(payload, @"\b(Infinity|-Infinity|NaN)\b", "0");
 
         return payload;

@@ -2,6 +2,7 @@ using AshamedApp.Domain.Models;
 using MQTTnet;
 using MQTTnet.Client;
 using System.Text;
+using AshamedApp.Application.DTOs;
 using AshamedApp.Application.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -42,22 +43,22 @@ namespace AshamedApp.Infrastructure.Services;
         }
 
         private async Task HandleReceivedMessage(MqttApplicationMessageReceivedEventArgs e)
-        {
-            var payload = Encoding.UTF8.GetString(e.ApplicationMessage.PayloadSegment);
-            Console.WriteLine($"Received message: {payload}");
+{
+    var payload = Encoding.UTF8.GetString(e.ApplicationMessage.PayloadSegment);
+    Console.WriteLine($"Received message: {payload}");
 
-            // Create a new scope for the IMqttMessageRepository
-            using var scope = _serviceProvider.CreateScope();
-            var messageRepository = scope.ServiceProvider.GetRequiredService<IMqttMessageRepository>();
+    // Create a new scope for the IMqttMessageRepository
+    using var scope = _serviceProvider.CreateScope();
+    var messageRepository = scope.ServiceProvider.GetRequiredService<IMqttMessageRepository>();
 
-            // Store the message in the repository asynchronously
-            messageRepository.AddMessage(new MqttMessage
-            {
-                Topic = e.ApplicationMessage.Topic,
-                Payload = payload,
-                Timestamp = DateTime.UtcNow
-            });
-        }
+    // Store the message in the repository asynchronously
+    await messageRepository.AddMessageAsync(new MqttMessageDto
+    {
+        Topic = e.ApplicationMessage.Topic,
+        Payload = payload,
+        Timestamp = DateTime.UtcNow
+    });
+}
 
         public async Task PublishMessageAsync(string message)
         {

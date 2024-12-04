@@ -6,5 +6,5 @@ namespace AshamedApp.Application.Repositories;
 public interface IMqttMessageRepository
 {
     GetAllMqttMessagesResponse GetAllMqttMessages(string topic);
-    void AddMessage(MqttMessage message);
+    Task AddMessageAsync(MqttMessageDto message);
 }
