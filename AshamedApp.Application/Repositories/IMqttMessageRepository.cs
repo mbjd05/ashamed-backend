@@ -1,5 +1,4 @@
 using AshamedApp.Application.DTOs;
-using AshamedApp.Domain.Models;
 
 namespace AshamedApp.Application.Repositories;
 

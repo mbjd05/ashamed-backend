@@ -1,7 +1,6 @@
 using System.Text.RegularExpressions;
 using AshamedApp.Application.DTOs;
 using AshamedApp.Application.Repositories;
-using AshamedApp.Domain.Models;
 using AshamedApp.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 

@@ -1,5 +1,4 @@
 using AshamedApp.Application.DTOs;
-using AshamedApp.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace AshamedApp.Infrastructure.Database

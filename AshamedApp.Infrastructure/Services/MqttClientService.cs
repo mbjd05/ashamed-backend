@@ -1,4 +1,3 @@
-using AshamedApp.Domain.Models;
 using MQTTnet;
 using MQTTnet.Client;
 using System.Text;
