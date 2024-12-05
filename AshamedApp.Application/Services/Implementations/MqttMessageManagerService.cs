@@ -12,6 +12,6 @@ public class MqttMessageManagerService(IMqttMessageRepository mqttMessageReposit
 
     public void AddMessage(MqttMessageDto message)
     {
-        mqttMessageRepository.AddMessageAsync(message);
+        mqttMessageRepository.AddMessageToDbAsync(message);
     }
 }

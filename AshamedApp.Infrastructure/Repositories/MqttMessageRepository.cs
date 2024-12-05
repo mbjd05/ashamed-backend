@@ -14,12 +14,12 @@ public class MqttMessageRepository(ApplicationDbContext dbContext) : IMqttMessag
         return new GetAllMqttMessagesResponse(mqttMessages);
     }
 
-    public async Task AddMessageAsync(MqttMessageDto message)
+    public async Task AddMessageToDbAsync(MqttMessageDto message)
 {
     dbContext.MqttMessages.Add(new MqttMessageDto
     {
         Topic = message.Topic,
-        Payload = SanitizePayload(message.Payload),
+        Payload = SanitizePayload(message.Payload ?? throw new InvalidOperationException()),
         Timestamp = message.Timestamp
     });
     await dbContext.SaveChangesAsync();

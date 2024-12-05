@@ -52,7 +52,7 @@ namespace AshamedApp.Infrastructure.Services;
     var messageRepository = scope.ServiceProvider.GetRequiredService<IMqttMessageRepository>();
 
     // Store the message in the repository asynchronously
-    await messageRepository.AddMessageAsync(new MqttMessageDto
+    await messageRepository.AddMessageToDbAsync(new MqttMessageDto
     {
         Topic = e.ApplicationMessage.Topic,
         Payload = payload,

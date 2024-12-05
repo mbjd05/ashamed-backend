@@ -13,9 +13,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddScoped<IContactManagerService, ContactManagerService>();
-builder.Services.AddScoped<IContactRepository, ContactRepository>();
 builder.Services.AddScoped<IMqttMessageRepository, MqttMessageRepository>();
+builder.Services.AddScoped<IMqttMessageManagerService, MqttMessageManagerService>();
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddSingleton<MqttClientService>();
 builder.Services.AddControllers();
@@ -53,7 +52,7 @@ else
 app.UseHttpsRedirection();
 
 var mqttClientService = app.Services.GetRequiredService<MqttClientService>();
-mqttClientService.ConnectAsync();
+await mqttClientService.ConnectAsync();
 
 using (var scope = app.Services.CreateScope())
 {
