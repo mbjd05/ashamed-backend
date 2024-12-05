@@ -3,27 +3,38 @@ using AshamedApp.Application.DTOs;
 using AshamedApp.Application.Repositories;
 using AshamedApp.Domain.Models;
 using AshamedApp.Infrastructure.Database;
+using Microsoft.EntityFrameworkCore;
 
 namespace AshamedApp.Infrastructure.Repositories;
 
 public class MqttMessageRepository(ApplicationDbContext dbContext) : IMqttMessageRepository
 {
+    private readonly ApplicationDbContext _dbContext = dbContext;
+
     public GetAllMqttMessagesResponse GetAllMqttMessages(string topic)
     {
-        List<MqttMessageDto> mqttMessages = dbContext.MqttMessages.Where(x => x.Topic == topic).ToList();
+        List<MqttMessageDto> mqttMessages = _dbContext.MqttMessages.Where(x => x.Topic == topic).ToList();
         return new GetAllMqttMessagesResponse(mqttMessages);
     }
 
     public async Task AddMessageToDbAsync(MqttMessageDto message)
 {
-    dbContext.MqttMessages.Add(new MqttMessageDto
+    _dbContext.MqttMessages.Add(new MqttMessageDto
     {
         Topic = message.Topic,
         Payload = SanitizePayload(message.Payload ?? throw new InvalidOperationException()),
         Timestamp = message.Timestamp
     });
-    await dbContext.SaveChangesAsync();
+    await _dbContext.SaveChangesAsync();
 }
+
+    public async Task<List<MqttMessageDto>> GetMessagesFromDbByTimeRange(string topic, DateTime start, DateTime end)
+    {
+        List<MqttMessageDto> mqttMessages = await _dbContext.MqttMessages
+            .Where(x => x.Timestamp >= start && x.Timestamp <= end && x.Topic == topic)
+            .ToListAsync();
+        return mqttMessages;
+    }
 
     private string SanitizePayload(string payload)
     {
