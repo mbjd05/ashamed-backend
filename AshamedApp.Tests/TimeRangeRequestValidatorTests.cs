@@ -88,7 +88,9 @@ public class TimeRangeRequestValidatorTests
     {
         var result = _validator.Validate(new TimeRangeRequest
         {
-            Topic = null,
+        #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+            Topic = null, //Topic is required, but I still want to test what happens when it's made null
+        #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
             Start = DateTime.Now.AddDays(-1),
             End = DateTime.Now
         });
