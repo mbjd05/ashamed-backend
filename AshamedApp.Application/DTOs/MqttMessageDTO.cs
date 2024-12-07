@@ -14,13 +14,17 @@ public class MqttMessageDto
         get
         {
             if (string.IsNullOrEmpty(Payload))
+            {
                 return null;
+            }
 
             try
             {
                 var cleanedPayload = Payload.Trim();
                 if (cleanedPayload.StartsWith("{") || cleanedPayload.StartsWith("["))
+                {
                     return JsonSerializer.Deserialize<object>(cleanedPayload);
+                }
 
                 return Payload;
             }
