@@ -64,6 +64,12 @@ jobs:
         with:
           sarif_file: results.sarif
 
+      - name: Send Coverage to Codacy 📈
+        run: |
+          bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
+            --project-token=${{ secrets.CODACY_PROJECT_TOKEN }} \
+            --coverage-reports=${{ env.SOLUTION_NAME }}.Tests/lcov.info
+
   publish:
     needs: build-test-and-coverage
     runs-on: ubuntu-latest
