@@ -90,10 +90,12 @@ public class MqttMessageManagerServiceTests
         Assert.NotNull(actualMqttMessages);
         Assert.Equal(expectedMqttMessages.Count, actualMqttMessages.Count);
         foreach (var expectedMessage in expectedMqttMessages)
+        {
             Assert.Contains(actualMqttMessages, actualMessage =>
                 actualMessage.Topic == expectedMessage.Topic &&
                 actualMessage.Payload == expectedMessage.Payload &&
                 actualMessage.Timestamp == expectedMessage.Timestamp);
+        }
 
         // Verify repository interaction
         _mockRepository.Verify(repo => repo.GetMessagesFromDbByTimeRange(topic, start, end), Times.Once);

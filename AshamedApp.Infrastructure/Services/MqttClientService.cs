@@ -59,7 +59,10 @@ public class MqttClientService : IDisposable
 
     public async Task PublishMessageAsync(string message)
     {
-        if (!_mqttClient.IsConnected) throw new InvalidOperationException("MQTT client is not connected.");
+        if (!_mqttClient.IsConnected)
+        {
+            throw new InvalidOperationException("MQTT client is not connected.");
+        }
 
         var payload = Encoding.UTF8.GetBytes(message);
         var applicationMessage = new MqttApplicationMessageBuilder()

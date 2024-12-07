@@ -35,7 +35,10 @@ public class MqttMessageRepository(ApplicationDbContext dbContext) : IMqttMessag
 
     private string SanitizePayload(string payload)
     {
-        if (string.IsNullOrEmpty(payload)) return payload;
+        if (string.IsNullOrEmpty(payload))
+        {
+            return payload;
+        }
         payload = Regex.Replace(payload, @"\b(Infinity|-Infinity|NaN)\b", "0");
 
         return payload;
