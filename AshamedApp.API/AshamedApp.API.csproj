@@ -9,14 +9,14 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0"/>
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.8"/>
-        <PackageReference Include="MQTTnet" Version="4.3.7.1207" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\AshamedApp.Application\AshamedApp.Application.csproj" />
-      <ProjectReference Include="..\AshamedApp.Infrastructure\AshamedApp.Infrastructure.csproj" />
+        <ProjectReference Include="..\AshamedApp.Application\AshamedApp.Application.csproj"/>
+        <ProjectReference Include="..\AshamedApp.Infrastructure\AshamedApp.Infrastructure.csproj"/>
     </ItemGroup>
 
 </Project>

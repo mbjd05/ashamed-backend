@@ -1,24 +1,34 @@
 using AshamedApp.Application.Repositories;
 using AshamedApp.Application.Services;
 using AshamedApp.Application.Services.Implementations;
+using AshamedApp.Application.Validators;
 using AshamedApp.Infrastructure.Database;
 using AshamedApp.Infrastructure.Repositories;
 using AshamedApp.Infrastructure.Services;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
-using MQTTnet.Client;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
+//Dependency Injection
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddScoped<IContactManagerService, ContactManagerService>();
-builder.Services.AddScoped<IContactRepository, ContactRepository>();
 builder.Services.AddScoped<IMqttMessageRepository, MqttMessageRepository>();
-builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddScoped<IMqttMessageManagerService, MqttMessageManagerService>();
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddSingleton<MqttClientService>();
 builder.Services.AddControllers();
+
+// Add FluentValidation
+builder.Services.AddFluentValidationAutoValidation().AddFluentValidationClientsideAdapters();
+
+// Register validators
+builder.Services.AddValidatorsFromAssemblyContaining<TimeRangeRequestValidator>();
 
 // Add CORS configuration
 builder.Services.AddCors(options =>
@@ -53,7 +63,7 @@ else
 app.UseHttpsRedirection();
 
 var mqttClientService = app.Services.GetRequiredService<MqttClientService>();
-mqttClientService.ConnectAsync();
+await mqttClientService.ConnectAsync();
 
 using (var scope = app.Services.CreateScope())
 {
@@ -70,4 +80,3 @@ app.UseAuthorization();
 app.MapControllers();
 app.Urls.Add("https://+:443");
 app.Run();
-

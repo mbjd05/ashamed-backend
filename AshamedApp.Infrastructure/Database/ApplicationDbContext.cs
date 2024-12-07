@@ -1,21 +1,18 @@
 using AshamedApp.Application.DTOs;
-using AshamedApp.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace AshamedApp.Infrastructure.Database
+namespace AshamedApp.Infrastructure.Database;
+
+public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options)
 {
-    public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options)
+    public DbSet<MqttMessageDto> MqttMessages => Set<MqttMessageDto>();
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        public DbSet<MqttMessageDto> MqttMessages => Set<MqttMessageDto>();
+        base.OnModelCreating(modelBuilder);
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            base.OnModelCreating(modelBuilder);
-
-            // Ensure that DeserializedPayload is not mapped by EF Core
-            modelBuilder.Entity<MqttMessageDto>()
-                .Ignore(m => m.DeserializedPayload);
-        }
+        // Ensure that DeserializedPayload is not mapped by EF Core
+        modelBuilder.Entity<MqttMessageDto>()
+            .Ignore(m => m.DeserializedPayload);
     }
 }
-
