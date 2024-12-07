@@ -7,6 +7,12 @@
 
         <IsPackable>false</IsPackable>
         <IsTestProject>true</IsTestProject>
+
+        <!-- Exclude Domain and Infrastructure projects from code coverage -->
+        <CoverletExclude>
+            **\AshamedApp.Domain\**
+            **\AshamedApp.Infrastructure\**
+        </CoverletExclude>
     </PropertyGroup>
 
     <ItemGroup>
@@ -30,14 +36,6 @@
     <ItemGroup>
         <ProjectReference Include="..\AshamedApp.Application\AshamedApp.Application.csproj"/>
         <ProjectReference Include="..\AshamedApp.Infrastructure\AshamedApp.Infrastructure.csproj"/>
-    </ItemGroup>
-
-    <!-- Exclude Domain and Infrastructure projects from coverage -->
-    <ItemGroup>
-        <ExcludeFromCodeCoverage>
-            <Files>**\AshamedApp.Domain\**</Files> <!-- Exclude Domain project -->
-            <Files>**\AshamedApp.Infrastructure\**</Files> <!-- Exclude Infrastructure project -->
-        </ExcludeFromCodeCoverage>
     </ItemGroup>
 
 </Project>
