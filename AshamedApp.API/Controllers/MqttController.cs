@@ -13,37 +13,30 @@ public class MqttController(IMqttMessageManagerService mqttMessageManagerService
     {
         var response = mqttMessageManagerService.GetAllMqttMessages(topic);
 
-        if (response.MqttMessages.Any())
+        if (!response.MqttMessages.Any())
         {
-            return Ok(response);
+            return NotFound(new { Message = "No messages found for this topic" });
         }
-
-        return NotFound(new { Message = "No messages found for this topic" });
+        return Ok(response);
     }
 
     [HttpGet("by-time-range")]
-    public async Task<ActionResult<List<MqttMessageDto>>> GetMessagesFromDbByTimeRange(string topic,  DateTime start, DateTime end)
+    public async Task<ActionResult<List<MqttMessageDto>>> GetMessagesFromDbByTimeRange([FromQuery] TimeRangeRequest request)
     {
-        var topicExists = mqttMessageManagerService.GetAllMqttMessages(topic).MqttMessages.Any();
+        var topicExists = mqttMessageManagerService.GetAllMqttMessages(request.Topic).MqttMessages.Any();
 
         if (!topicExists)
         {
             return NotFound(new { Message = "No messages exist for the specified topic." });
         }
 
-        var response = await mqttMessageManagerService.GetMessagesFromDbByTimeRange(topic, start, end);
+        var response = await mqttMessageManagerService.GetMessagesFromDbByTimeRange(request.Topic, request.Start, request.End);
 
-        if (start > end)
+        if (!response.Any())
         {
-            return BadRequest(new { Message = "The start date must be earlier than the end date."});
+            return NotFound(new { Message = "No messages found for this topic within the specified time range." });
         }
-
-        if (response.Any())
-        {
-            return Ok(response);
-        }
-
-        return NotFound(new { Message = "No messages found for this topic within the specified time range." });
+        return Ok(response);
     }
 
 }
