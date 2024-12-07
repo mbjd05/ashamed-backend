@@ -43,14 +43,14 @@ jobs:
         run: dotnet test ${{ env.SOLUTION_NAME }}.Tests/${{ env.SOLUTION_NAME }}.Tests.csproj -c Release --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=lcov /p:CoverletOutput=./lcov.info
 
       - name: Coveralls GitHub Action
-        uses: coverallsapp/github-action@v2
+        uses: coverallsapp/github-action@cfd0633edbd2411b532b808ba7a8b5e04f76d2c8
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           file: ${{ env.SOLUTION_NAME }}.Tests/lcov.info
           format: lcov
 
       - name: Run Codacy Analysis CLI 🔍
-        uses: codacy/codacy-analysis-cli-action@master
+        uses: codacy/codacy-analysis-cli-action@97bf5df3c09e75f5bcd72695998f96ebd701846e
         with:
           project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
           verbose: true
