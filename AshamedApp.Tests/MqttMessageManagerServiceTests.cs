@@ -80,7 +80,7 @@ public class MqttMessageManagerServiceTests
         };
 
         _mockRepository
-            .Setup(repo => repo.GetMessagesFromDbByTimeRangeAsync(topic, start, end))
+            .Setup(repo => repo.GetMessagesFromDbByTimeRange(topic, start, end))
             .ReturnsAsync(expectedMqttMessages);
 
         // Act
@@ -96,7 +96,7 @@ public class MqttMessageManagerServiceTests
                 actualMessage.Timestamp == expectedMessage.Timestamp);
 
         // Verify repository interaction
-        _mockRepository.Verify(repo => repo.GetMessagesFromDbByTimeRangeAsync(topic, start, end), Times.Once);
+        _mockRepository.Verify(repo => repo.GetMessagesFromDbByTimeRange(topic, start, end), Times.Once);
     }
 
     [Fact]
@@ -108,7 +108,7 @@ public class MqttMessageManagerServiceTests
         var end = DateTime.Now;
 
         _mockRepository
-            .Setup(repo => repo.GetMessagesFromDbByTimeRangeAsync(topic, start, end))
+            .Setup(repo => repo.GetMessagesFromDbByTimeRange(topic, start, end))
             .ReturnsAsync(new List<MqttMessageDto>());
 
         // Act
@@ -119,7 +119,7 @@ public class MqttMessageManagerServiceTests
         Assert.Empty(actualMqttMessages);
 
         // Verify repository interaction
-        _mockRepository.Verify(repo => repo.GetMessagesFromDbByTimeRangeAsync(topic, start, end), Times.Once);
+        _mockRepository.Verify(repo => repo.GetMessagesFromDbByTimeRange(topic, start, end), Times.Once);
     }
 
     [Fact]
@@ -131,7 +131,7 @@ public class MqttMessageManagerServiceTests
         var end = DateTime.Now;
 
         _mockRepository
-            .Setup(repo => repo.GetMessagesFromDbByTimeRangeAsync(topic, start, end))
+            .Setup(repo => repo.GetMessagesFromDbByTimeRange(topic, start, end))
             .ThrowsAsync(new Exception("Database error"));
 
         // Act & Assert
@@ -140,7 +140,7 @@ public class MqttMessageManagerServiceTests
         Assert.Equal("Database error", exception.Message);
 
         // Verify repository interaction
-        _mockRepository.Verify(repo => repo.GetMessagesFromDbByTimeRangeAsync(topic, start, end), Times.Once);
+        _mockRepository.Verify(repo => repo.GetMessagesFromDbByTimeRange(topic, start, end), Times.Once);
     }
 
     [Fact]

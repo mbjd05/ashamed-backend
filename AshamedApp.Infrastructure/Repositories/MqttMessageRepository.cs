@@ -25,7 +25,7 @@ public class MqttMessageRepository(ApplicationDbContext dbContext) : IMqttMessag
         await dbContext.SaveChangesAsync();
     }
 
-    public async Task<List<MqttMessageDto>> GetMessagesFromDbByTimeRangeAsync(string topic, DateTime start, DateTime end)
+    public async Task<List<MqttMessageDto>> GetMessagesFromDbByTimeRange(string topic, DateTime start, DateTime end)
     {
         var mqttMessages = await dbContext.MqttMessages
             .Where(x => x.Timestamp >= start && x.Timestamp <= end && x.Topic == topic)
