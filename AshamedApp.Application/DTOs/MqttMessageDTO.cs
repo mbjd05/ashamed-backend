@@ -20,9 +20,7 @@ public class MqttMessageDto
             {
                 var cleanedPayload = Payload.Trim();
                 if (cleanedPayload.StartsWith("{") || cleanedPayload.StartsWith("["))
-                {
                     return JsonSerializer.Deserialize<object>(cleanedPayload);
-                }
 
                 return Payload;
             }

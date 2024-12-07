@@ -7,22 +7,22 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\AshamedApp.Application\AshamedApp.Application.csproj" />
-      <ProjectReference Include="..\AshamedApp.Domain\AshamedApp.Domain.csproj" />
+        <ProjectReference Include="..\AshamedApp.Application\AshamedApp.Application.csproj"/>
+        <ProjectReference Include="..\AshamedApp.Domain\AshamedApp.Domain.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.10" />
-      <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.10" />
-      <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.10">
-        <PrivateAssets>all</PrivateAssets>
-        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      </PackageReference>
-      <PackageReference Include="MQTTnet" Version="4.3.7.1207" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.10"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.10"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.10">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="MQTTnet" Version="4.3.7.1207"/>
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Entities\" />
+        <Folder Include="Entities\"/>
     </ItemGroup>
 
 </Project>

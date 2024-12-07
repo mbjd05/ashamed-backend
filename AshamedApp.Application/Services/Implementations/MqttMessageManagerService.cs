@@ -10,13 +10,13 @@ public class MqttMessageManagerService(IMqttMessageRepository mqttMessageReposit
         return mqttMessageRepository.GetAllMqttMessages(topic);
     }
 
-    public void AddMessage(MqttMessageDto message)
+    public async Task AddMessageAsync(MqttMessageDto message)
     {
-        mqttMessageRepository.AddMessageToDbAsync(message);
+        await mqttMessageRepository.AddMessageToDbAsync(message);
     }
 
-    public async Task<List<MqttMessageDto>> GetMessagesFromDbByTimeRange(string topic, DateTime start, DateTime end)
+    public async Task<List<MqttMessageDto>> GetMessagesFromDbByTimeRangeAsync(string topic, DateTime start, DateTime end)
     {
-        return await mqttMessageRepository.GetMessagesFromDbByTimeRange(topic, start, end);
+        return await mqttMessageRepository.GetMessagesFromDbByTimeRangeAsync(topic, start, end);
     }
 }

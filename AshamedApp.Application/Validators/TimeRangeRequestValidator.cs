@@ -1,4 +1,5 @@
 namespace AshamedApp.Application.Validators;
+
 using DTOs;
 using FluentValidation;
 

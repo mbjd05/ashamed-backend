@@ -19,7 +19,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IMqttMessageRepository, MqttMessageRepository>();
 builder.Services.AddScoped<IMqttMessageManagerService, MqttMessageManagerService>();
-builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddSingleton<MqttClientService>();
 builder.Services.AddControllers();
 
@@ -79,4 +80,3 @@ app.UseAuthorization();
 app.MapControllers();
 app.Urls.Add("https://+:443");
 app.Run();
-

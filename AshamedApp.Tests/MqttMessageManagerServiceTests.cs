@@ -24,11 +24,11 @@ public class MqttMessageManagerServiceTests
     public void GetAllMqttMessages_ReturnsMessages_WhenTopicExists()
     {
         // Arrange
-        string topic = "test/topic";
+        var topic = "test/topic";
         var expectedMqttMessages = new List<MqttMessageDto>
         {
-            new MqttMessageDto { Topic = topic, Payload = "Message 1", Timestamp = DateTime.Now },
-            new MqttMessageDto { Topic = topic, Payload = "Message 2", Timestamp = DateTime.Now }
+            new() { Topic = topic, Payload = "Message 1", Timestamp = DateTime.Now },
+            new() { Topic = topic, Payload = "Message 2", Timestamp = DateTime.Now }
         };
         _mockRepository.Setup(repo => repo.GetAllMqttMessages(topic))
             .Returns(new GetAllMqttMessagesResponse(expectedMqttMessages));
@@ -41,12 +41,10 @@ public class MqttMessageManagerServiceTests
         Assert.Equal(expectedMqttMessages.Count, actualMqttMessagesResponse.MqttMessages.Count());
 
         foreach (var expectedMessage in expectedMqttMessages)
-        {
             Assert.Contains(actualMqttMessagesResponse.MqttMessages, actualMessage =>
                 actualMessage.Topic == expectedMessage.Topic &&
                 actualMessage.Payload == expectedMessage.Payload &&
                 actualMessage.Timestamp == expectedMessage.Timestamp);
-        }
 
         // Verify repository interaction
         _mockRepository.Verify(repo => repo.GetAllMqttMessages(topic), Times.Once);
@@ -56,7 +54,7 @@ public class MqttMessageManagerServiceTests
     public void GetAllMqttMessages_ReturnsEmpty_WhenNoMessagesExist()
     {
         // Arrange
-        string topic = "nonexistent/topic";
+        var topic = "nonexistent/topic";
         _mockRepository.Setup(repo => repo.GetAllMqttMessages(topic))
             .Returns(new GetAllMqttMessagesResponse(Enumerable.Empty<MqttMessageDto>()));
 
@@ -69,81 +67,103 @@ public class MqttMessageManagerServiceTests
     }
 
     [Fact]
-public async Task GetMessagesFromDbByTimeRange_ReturnsMessages_WhenMessagesExistInTimeRange()
-{
-    // Arrange
-    string topic = "test/topic";
-    DateTime start = DateTime.Now.AddHours(-1);
-    DateTime end = DateTime.Now;
-    var expectedMqttMessages = new List<MqttMessageDto>
+    public async Task GetMessagesFromDbByTimeRange_ReturnsMessages_WhenMessagesExistInTimeRange()
     {
-        new MqttMessageDto { Topic = topic, Payload = "Message 1", Timestamp = start.AddMinutes(10) },
-        new MqttMessageDto { Topic = topic, Payload = "Message 2", Timestamp = start.AddMinutes(20) }
-    };
+        // Arrange
+        var topic = "test/topic";
+        var start = DateTime.Now.AddHours(-1);
+        var end = DateTime.Now;
+        var expectedMqttMessages = new List<MqttMessageDto>
+        {
+            new() { Topic = topic, Payload = "Message 1", Timestamp = start.AddMinutes(10) },
+            new() { Topic = topic, Payload = "Message 2", Timestamp = start.AddMinutes(20) }
+        };
 
-    _mockRepository
-        .Setup(repo => repo.GetMessagesFromDbByTimeRange(topic, start, end))
-        .ReturnsAsync(expectedMqttMessages);
+        _mockRepository
+            .Setup(repo => repo.GetMessagesFromDbByTimeRangeAsync(topic, start, end))
+            .ReturnsAsync(expectedMqttMessages);
 
-    // Act
-    var actualMqttMessages = await _service.GetMessagesFromDbByTimeRange(topic, start, end);
+        // Act
+        var actualMqttMessages = await _service.GetMessagesFromDbByTimeRangeAsync(topic, start, end);
 
-    // Assert
-    Assert.NotNull(actualMqttMessages);
-    Assert.Equal(expectedMqttMessages.Count, actualMqttMessages.Count);
-    foreach (var expectedMessage in expectedMqttMessages)
-    {
-        Assert.Contains(actualMqttMessages, actualMessage =>
-            actualMessage.Topic == expectedMessage.Topic &&
-            actualMessage.Payload == expectedMessage.Payload &&
-            actualMessage.Timestamp == expectedMessage.Timestamp);
+        // Assert
+        Assert.NotNull(actualMqttMessages);
+        Assert.Equal(expectedMqttMessages.Count, actualMqttMessages.Count);
+        foreach (var expectedMessage in expectedMqttMessages)
+            Assert.Contains(actualMqttMessages, actualMessage =>
+                actualMessage.Topic == expectedMessage.Topic &&
+                actualMessage.Payload == expectedMessage.Payload &&
+                actualMessage.Timestamp == expectedMessage.Timestamp);
+
+        // Verify repository interaction
+        _mockRepository.Verify(repo => repo.GetMessagesFromDbByTimeRangeAsync(topic, start, end), Times.Once);
     }
 
-    // Verify repository interaction
-    _mockRepository.Verify(repo => repo.GetMessagesFromDbByTimeRange(topic, start, end), Times.Once);
-}
+    [Fact]
+    public async Task GetMessagesFromDbByTimeRange_ReturnsEmptyList_WhenNoMessagesExistInTimeRange()
+    {
+        // Arrange
+        var topic = "test/topic";
+        var start = DateTime.Now.AddHours(-1);
+        var end = DateTime.Now;
 
-[Fact]
-public async Task GetMessagesFromDbByTimeRange_ReturnsEmptyList_WhenNoMessagesExistInTimeRange()
-{
-    // Arrange
-    string topic = "test/topic";
-    DateTime start = DateTime.Now.AddHours(-1);
-    DateTime end = DateTime.Now;
+        _mockRepository
+            .Setup(repo => repo.GetMessagesFromDbByTimeRangeAsync(topic, start, end))
+            .ReturnsAsync(new List<MqttMessageDto>());
 
-    _mockRepository
-        .Setup(repo => repo.GetMessagesFromDbByTimeRange(topic, start, end))
-        .ReturnsAsync(new List<MqttMessageDto>());
+        // Act
+        var actualMqttMessages = await _service.GetMessagesFromDbByTimeRangeAsync(topic, start, end);
 
-    // Act
-    var actualMqttMessages = await _service.GetMessagesFromDbByTimeRange(topic, start, end);
+        // Assert
+        Assert.NotNull(actualMqttMessages);
+        Assert.Empty(actualMqttMessages);
 
-    // Assert
-    Assert.NotNull(actualMqttMessages);
-    Assert.Empty(actualMqttMessages);
+        // Verify repository interaction
+        _mockRepository.Verify(repo => repo.GetMessagesFromDbByTimeRangeAsync(topic, start, end), Times.Once);
+    }
 
-    // Verify repository interaction
-    _mockRepository.Verify(repo => repo.GetMessagesFromDbByTimeRange(topic, start, end), Times.Once);
-}
+    [Fact]
+    public async Task GetMessagesFromDbByTimeRange_ThrowsException_WhenRepositoryThrowsException()
+    {
+        // Arrange
+        var topic = "test/topic";
+        var start = DateTime.Now.AddHours(-1);
+        var end = DateTime.Now;
 
-[Fact]
-public async Task GetMessagesFromDbByTimeRange_ThrowsException_WhenRepositoryThrowsException()
-{
-    // Arrange
-    string topic = "test/topic";
-    DateTime start = DateTime.Now.AddHours(-1);
-    DateTime end = DateTime.Now;
+        _mockRepository
+            .Setup(repo => repo.GetMessagesFromDbByTimeRangeAsync(topic, start, end))
+            .ThrowsAsync(new Exception("Database error"));
 
-    _mockRepository
-        .Setup(repo => repo.GetMessagesFromDbByTimeRange(topic, start, end))
-        .ThrowsAsync(new Exception("Database error"));
+        // Act & Assert
+        var exception = await Assert.ThrowsAsync<Exception>(async () =>
+            await _service.GetMessagesFromDbByTimeRangeAsync(topic, start, end));
+        Assert.Equal("Database error", exception.Message);
 
-    // Act & Assert
-    var exception = await Assert.ThrowsAsync<Exception>(async () =>
-        await _service.GetMessagesFromDbByTimeRange(topic, start, end));
-    Assert.Equal("Database error", exception.Message);
+        // Verify repository interaction
+        _mockRepository.Verify(repo => repo.GetMessagesFromDbByTimeRangeAsync(topic, start, end), Times.Once);
+    }
 
-    // Verify repository interaction
-    _mockRepository.Verify(repo => repo.GetMessagesFromDbByTimeRange(topic, start, end), Times.Once);
-}
+    [Fact]
+    public void AddMessageAsync_CallsRepositoryMethod()
+    {
+        // Arrange
+        var message = new MqttMessageDto
+        {
+            Topic = "test/topic",
+            Payload = "Test payload",
+            Timestamp = DateTime.Now
+        };
+
+        _mockRepository.Setup(repo => repo.AddMessageToDbAsync(It.IsAny<MqttMessageDto>()))
+            .Returns(Task.CompletedTask);
+
+        // Act
+        _service.AddMessageAsync(message);
+
+        // Assert
+        _mockRepository.Verify(repo => repo.AddMessageToDbAsync(It.Is<MqttMessageDto>(m =>
+            m.Topic == message.Topic &&
+            m.Payload == message.Payload &&
+            m.Timestamp == message.Timestamp)), Times.Once);
+    }
 }
