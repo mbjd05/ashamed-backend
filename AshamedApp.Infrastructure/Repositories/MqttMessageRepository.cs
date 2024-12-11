@@ -18,6 +18,7 @@ public class MqttMessageRepository(ApplicationDbContext dbContext) : IMqttMessag
     {
         dbContext.MqttMessages.Add(new MqttMessageDto
         {
+            Id = message.Id,
             Topic = message.Topic,
             Payload = SanitizePayload(message.Payload ?? throw new InvalidOperationException()),
             Timestamp = message.Timestamp

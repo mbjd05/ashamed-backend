@@ -53,7 +53,7 @@ public class MqttClientService : IDisposable
         {
             Topic = e.ApplicationMessage.Topic,
             Payload = payload,
-            Timestamp = DateTime.UtcNow
+            Timestamp = DateTime.UtcNow,
         });
     }
 
