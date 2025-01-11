@@ -56,8 +56,7 @@ public class MqttClientService : IDisposable
         
         MqttMessageDto lastMessage = messageManagerService.GetLastMqttMessage(e.ApplicationMessage.Topic);
         
-        // if the new message is at least 10 minutes newer than the last message and , save it
-        if (messageToSave.Timestamp - lastMessage.Timestamp >= TimeSpan.FromMinutes(10))
+        if (lastMessage.Timestamp == default || messageToSave.Timestamp - lastMessage.Timestamp >= TimeSpan.FromMinutes(10))
         {
             await messageManagerService.AddMessageAsync(messageToSave);
         }
