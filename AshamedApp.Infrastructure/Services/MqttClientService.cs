@@ -15,6 +15,7 @@ public class MqttClientService : IDisposable
     private readonly string _topic = "z2m/air-monitor";
     private readonly string _brokerAddress = "localhost";
     private readonly int _brokerPort = 8883;
+    private Dictionary<string, DateTime> _lastMessageTimestamps = new Dictionary<string, DateTime>();
 
     public MqttClientService(IServiceProvider serviceProvider)
     {
@@ -42,25 +43,34 @@ public class MqttClientService : IDisposable
     private async Task HandleReceivedMessage(MqttApplicationMessageReceivedEventArgs e)
     {
         var payload = Encoding.UTF8.GetString(e.ApplicationMessage.PayloadSegment);
-        Console.WriteLine($"Received message: {payload}");
 
-        // Create a new scope for the IMqttMessageRepository
         using var scope = _serviceProvider.CreateScope();
         var messageManagerService = scope.ServiceProvider.GetRequiredService<IMqttMessageManagerService>();
+        var currentTime = DateTime.UtcNow;
+    
         MqttMessageDto messageToSave = new()
         {
             Topic = e.ApplicationMessage.Topic,
             Payload = payload,
-            Timestamp = DateTime.UtcNow,
+            Timestamp = currentTime,
         };
-        
-        MqttMessageDto lastMessage = messageManagerService.GetLastMqttMessage(e.ApplicationMessage.Topic);
-        
-        if (lastMessage.Timestamp == default || messageToSave.Timestamp - lastMessage.Timestamp >= TimeSpan.FromMinutes(10))
+    
+        if (!_lastMessageTimestamps.TryGetValue(e.ApplicationMessage.Topic, out DateTime lastTimestamp))
+        {
+            var lastMessage = messageManagerService.GetLastMqttMessage(e.ApplicationMessage.Topic);
+            lastTimestamp = lastMessage.Timestamp;
+            _lastMessageTimestamps[e.ApplicationMessage.Topic] = lastTimestamp;
+        }
+    
+        var timeSinceLastMessage = currentTime - lastTimestamp;
+    
+        if (lastTimestamp == default || timeSinceLastMessage >= TimeSpan.FromMinutes(10))
         {
             await messageManagerService.AddMessageAsync(messageToSave);
+            _lastMessageTimestamps[e.ApplicationMessage.Topic] = currentTime;
         }
     }
+
 
     public async Task PublishMessageAsync(string message)
     {
