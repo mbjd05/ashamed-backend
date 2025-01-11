@@ -4,6 +4,7 @@ namespace AshamedApp.Application.Services;
 
 public interface IMqttMessageManagerService
 {
+    public MqttMessageDto GetLastMqttMessage(string topic);
     public GetAllMqttMessagesResponse GetAllMqttMessages(string topic);
 
     public Task AddMessageAsync(MqttMessageDto message);

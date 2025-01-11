@@ -12,9 +12,9 @@ public class MqttClientService : IDisposable
 {
     private readonly IMqttClient _mqttClient;
     private readonly IServiceProvider _serviceProvider; // To create a scope for scoped services
-    private readonly string _topic = "43256";
-    private readonly string _brokerAddress = "broker.emqx.io";
-    private readonly int _brokerPort = 8083;
+    private readonly string _topic = "z2m/air-monitor";
+    private readonly string _brokerAddress = "localhost";
+    private readonly int _brokerPort = 8883;
 
     public MqttClientService(IServiceProvider serviceProvider)
     {
@@ -26,7 +26,7 @@ public class MqttClientService : IDisposable
     public async Task ConnectAsync()
     {
         var options = new MqttClientOptionsBuilder()
-            .WithWebSocketServer(options => { options.WithUri($"ws://{_brokerAddress}:{_brokerPort}/mqtt"); })
+            .WithWebSocketServer(options => { options.WithUri($"ws://{_brokerAddress}:{_brokerPort}"); })
             .WithClientId($"DotNetClient-{Guid.NewGuid()}")
             .WithCleanSession()
             .Build();
@@ -36,7 +36,7 @@ public class MqttClientService : IDisposable
         await _mqttClient.ConnectAsync(options);
         await _mqttClient.SubscribeAsync(_topic);
 
-        Console.WriteLine("Connected to MQTT broker and subscribed to topic.");
+        Console.WriteLine("Connected to MQTT broker and subscribed to topic: " + _topic);
     }
 
     private async Task HandleReceivedMessage(MqttApplicationMessageReceivedEventArgs e)
@@ -47,14 +47,20 @@ public class MqttClientService : IDisposable
         // Create a new scope for the IMqttMessageRepository
         using var scope = _serviceProvider.CreateScope();
         var messageManagerService = scope.ServiceProvider.GetRequiredService<IMqttMessageManagerService>();
-
-        // Store the message in the repository asynchronously
-        await messageManagerService.AddMessageAsync(new MqttMessageDto
+        MqttMessageDto messageToSave = new()
         {
             Topic = e.ApplicationMessage.Topic,
             Payload = payload,
             Timestamp = DateTime.UtcNow,
-        });
+        };
+        
+        MqttMessageDto lastMessage = messageManagerService.GetLastMqttMessage(e.ApplicationMessage.Topic);
+        
+        // if the new message is at least 10 minutes newer than the last message and , save it
+        if (messageToSave.Timestamp - lastMessage.Timestamp >= TimeSpan.FromMinutes(10))
+        {
+            await messageManagerService.AddMessageAsync(messageToSave);
+        }
     }
 
     public async Task PublishMessageAsync(string message)

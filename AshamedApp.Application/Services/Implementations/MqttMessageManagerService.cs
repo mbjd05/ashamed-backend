@@ -5,6 +5,11 @@ namespace AshamedApp.Application.Services.Implementations;
 
 public class MqttMessageManagerService(IMqttMessageRepository mqttMessageRepository) : IMqttMessageManagerService
 {
+    public MqttMessageDto GetLastMqttMessage(string topic)
+    {
+        return mqttMessageRepository.GetLastMqttMessage(topic);
+    }
+
     public GetAllMqttMessagesResponse GetAllMqttMessages(string topic)
     {
         return mqttMessageRepository.GetAllMqttMessages(topic);

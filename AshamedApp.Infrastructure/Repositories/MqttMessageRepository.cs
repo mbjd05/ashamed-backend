@@ -13,6 +13,16 @@ public class MqttMessageRepository(ApplicationDbContext dbContext) : IMqttMessag
         var mqttMessages = dbContext.MqttMessages.Where(x => x.Topic == topic).ToList();
         return new GetAllMqttMessagesResponse(mqttMessages);
     }
+    
+    public MqttMessageDto GetLastMqttMessage(string topic)
+    {
+        return dbContext.MqttMessages
+            .Where(x => x.Topic == topic)
+            .OrderByDescending(x => x.Timestamp)
+            .FirstOrDefault()
+            ?? new MqttMessageDto { Topic = topic };
+    }
+
 
     public async Task AddMessageToDbAsync(MqttMessageDto message)
     {
