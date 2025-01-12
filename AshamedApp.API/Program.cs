@@ -19,6 +19,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IMqttMessageRepository, MqttMessageRepository>();
 builder.Services.AddScoped<IMqttMessageManagerService, MqttMessageManagerService>();
+builder.Services.AddScoped<ISnapshotRepository, SnapshotRepository>();
+builder.Services.AddScoped<ISnapshotManagerService, SnapshotManagerService>();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddSingleton<MqttClientService>();
@@ -29,6 +31,7 @@ builder.Services.AddFluentValidationAutoValidation().AddFluentValidationClientsi
 
 // Register validators
 builder.Services.AddValidatorsFromAssemblyContaining<TimeRangeRequestValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<SnapshotDtoValidator>();
 
 // Add CORS configuration
 builder.Services.AddCors(options =>
@@ -63,7 +66,7 @@ else
 app.UseHttpsRedirection();
 
 var mqttClientService = app.Services.GetRequiredService<MqttClientService>();
-await mqttClientService.ConnectAsync();
+_ = Task.Run(async () => await mqttClientService.ConnectAsync());
 
 using (var scope = app.Services.CreateScope())
 {
