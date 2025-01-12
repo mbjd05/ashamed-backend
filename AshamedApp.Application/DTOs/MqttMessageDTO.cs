@@ -4,6 +4,7 @@ namespace AshamedApp.Application.DTOs;
 
 public class MqttMessageDto
 {
+    public int Id { get; init; }
     public required string Topic { get; init; }
     public string? Payload { get; init; }
     public DateTime Timestamp { get; init; }
