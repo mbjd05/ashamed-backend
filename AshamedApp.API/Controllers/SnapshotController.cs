@@ -11,16 +11,38 @@ public class SnapshotController(ISnapshotManagerService snapshotManagerService) 
     [HttpPost]
     public async Task<IActionResult> CreateSnapshotAsync(SnapshotDto snapshot)
     {
-        var created = await snapshotManagerService.CreateSnapshotAsync(snapshot);
-        return Ok(created);
+        try
+        {
+            var created = await snapshotManagerService.CreateSnapshotAsync(snapshot);
+            return Ok(created);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { message = "MqttMessage not found.", details = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "An unexpected error occurred while creating the snapshot.", details = ex.Message });
+        }
     }
     
     [HttpGet("{id}")]
     public async Task<IActionResult> GetSnapshotByIdAsync(int id)
     {
-        var snapshot = await snapshotManagerService.GetSnapshotByIdAsync(id);
-        if (snapshot == null) return NotFound();
-        return Ok(snapshot);
+        try
+        {
+            var snapshot = await snapshotManagerService.GetSnapshotByIdAsync(id);
+            if (snapshot == null) return NotFound();
+            return Ok(snapshot);
+        }
+        catch (KeyNotFoundException e)
+        {
+            return NotFound(new { message = "Snapshot not found", details = e.Message });
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, new { Message = e.Message });
+        }
     }
     
     [HttpGet]

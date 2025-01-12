@@ -7,47 +7,64 @@ namespace AshamedApp.Infrastructure.Repositories;
 
 public class SnapshotRepository(ApplicationDbContext dbContext) : ISnapshotRepository
 {
-    public async Task<SnapshotDto> CreateSnapshotAsync(SnapshotDto snapshot)
+    public async Task<SnapshotDto?> CreateSnapshotAsync(SnapshotDto snapshot)
     {
+        // Handle existing MqttMessages or return null if any message does not exist
+        var messages = await HandleExistingMqttMessages(snapshot.Messages);
+        if (messages == null)
+        {
+            return null;
+        }
+
+        // Create the SnapshotDto
         var snapshotToCreate = new SnapshotDto
         {
             Title = snapshot.Title,
             Description = snapshot.Description,
-            MessageIds = snapshot.MessageIds
+            Messages = messages
         };
 
+        // Add the snapshot to the database
         dbContext.Snapshots.Add(snapshotToCreate);
         await dbContext.SaveChangesAsync();
-
+    
         return snapshotToCreate;
     }
 
-    public async Task<SnapshotDto?> GetSnapshotByIdAsync(int id)
+    private async Task<List<MqttMessageDto>?> HandleExistingMqttMessages(List<MqttMessageDto> messages)
     {
-        var snapshot = await dbContext.Snapshots.FirstOrDefaultAsync(s => s.Id == id);
+        var processedMessages = new List<MqttMessageDto>();
 
-        if (snapshot == null)
-            return null;
-
-        return new SnapshotDto
+        foreach (var message in messages)
         {
-            Id = snapshot.Id,
-            Title = snapshot.Title,
-            Description = snapshot.Description,
-            MessageIds = snapshot.MessageIds
-        };
+            var existingMessage = await dbContext.MqttMessages
+                .FirstOrDefaultAsync(m => m.Id == message.Id);
+
+            if (existingMessage != null)
+            {
+                processedMessages.Add(existingMessage);
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        return processedMessages;
     }
 
     public async Task<GetAllSnapshotsResponse> GetAllSnapshotsAsync()
     {
-        var snapshots = await dbContext.Snapshots.ToListAsync();
+        var snapshots = await dbContext.Snapshots
+            .Include(s => s.Messages) 
+            .ToListAsync();
 
         var snapshotDtos = snapshots.Select(s => new SnapshotDto
         {
             Id = s.Id,
             Title = s.Title,
             Description = s.Description,
-            MessageIds = s.MessageIds
+            Messages = s.Messages
         }).ToList();
 
         return new GetAllSnapshotsResponse(snapshotDtos);
@@ -55,34 +72,42 @@ public class SnapshotRepository(ApplicationDbContext dbContext) : ISnapshotRepos
 
     public async Task<SnapshotDto?> UpdateSnapshotAsync(SnapshotDto snapshot)
     {
-        var existingSnapshot = await dbContext.Snapshots.FirstOrDefaultAsync(s => s.Id == snapshot.Id);
+        var existingSnapshot = await dbContext.Snapshots
+            .Include(s => s.Messages) // Load related messages
+            .FirstOrDefaultAsync(s => s.Id == snapshot.Id);
 
         if (existingSnapshot == null)
             return null;
 
+        // Update the snapshot's details
         existingSnapshot.Title = snapshot.Title;
         existingSnapshot.Description = snapshot.Description;
-        existingSnapshot.MessageIds = snapshot.MessageIds;
 
+        // Save the changes
         await dbContext.SaveChangesAsync();
 
-        return new SnapshotDto
-        {
-            Id = existingSnapshot.Id,
-            Title = existingSnapshot.Title,
-            Description = existingSnapshot.Description,
-            MessageIds = existingSnapshot.MessageIds
-        };
+        return existingSnapshot;
     }
 
     public async Task DeleteSnapshotAsync(int id)
     {
-        var snapshot = await dbContext.Snapshots.FindAsync(id);
+        var snapshot = await dbContext.Snapshots
+            .Include(s => s.Messages) // Load related messages
+            .FirstOrDefaultAsync(s => s.Id == id);
 
         if (snapshot != null)
         {
             dbContext.Snapshots.Remove(snapshot);
             await dbContext.SaveChangesAsync();
         }
+    }
+
+    public async Task<SnapshotDto?> GetSnapshotByIdAsync(int id)
+    {
+        
+        var snapshots = await dbContext.Snapshots
+            .Include(s => s.Messages) // Ensure related messages are loaded
+            .FirstOrDefaultAsync(s => s.Id == id);
+        return snapshots ?? null;
     }
 }

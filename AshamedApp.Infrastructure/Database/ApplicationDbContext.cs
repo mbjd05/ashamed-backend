@@ -16,8 +16,8 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             .Ignore(m => m.DeserializedPayload);
 
         modelBuilder.Entity<SnapshotDto>()
-            .HasMany<MqttMessageDto>()
-            .WithMany()
+            .HasMany(s => s.Messages)  // Snapshot has many messages
+            .WithMany() 
             .UsingEntity<Dictionary<string, object>>(
                 "SnapshotMqttMessage",
                 l => l.HasOne<MqttMessageDto>()
