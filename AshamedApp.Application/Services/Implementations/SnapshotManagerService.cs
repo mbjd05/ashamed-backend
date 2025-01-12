@@ -49,7 +49,8 @@ public class SnapshotManagerService(ISnapshotRepository snapshotRepository) : IS
         {
             Id = updated.Id,
             Title = updated.Title,
-            Description = updated.Description
+            Description = updated.Description,
+            MessageIds = updated.MessageIds
         };
     }
 
