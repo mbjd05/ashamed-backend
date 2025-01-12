@@ -10,4 +10,6 @@ public interface IMqttMessageManagerService
     public Task AddMessageAsync(MqttMessageDto message);
 
     public Task<List<MqttMessageDto>> GetMessagesFromDbByTimeRangeAsync(string topic, DateTime start, DateTime end);
+    
+    public Task<MqttMessageDto> GetMqttMessageByIdAsync(int id);
 }

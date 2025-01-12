@@ -24,4 +24,9 @@ public class MqttMessageManagerService(IMqttMessageRepository mqttMessageReposit
     {
         return await mqttMessageRepository.GetMessagesFromDbByTimeRange(topic, start, end);
     }
+
+    public async Task<MqttMessageDto> GetMqttMessageByIdAsync(int id)
+    {
+        return await mqttMessageRepository.GetMqttMessageByIdAsync(id);
+    }
 }

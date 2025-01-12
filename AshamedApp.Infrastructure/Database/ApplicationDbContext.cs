@@ -12,13 +12,26 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     {
         base.OnModelCreating(modelBuilder);
 
-        // Ensure that DeserializedPayload is not mapped by EF Core
         modelBuilder.Entity<MqttMessageDto>()
             .Ignore(m => m.DeserializedPayload);
-        
+
         modelBuilder.Entity<SnapshotDto>()
-            .HasMany(s => s.Messages)
-            .WithOne()
-            .OnDelete(DeleteBehavior.Cascade);
+            .HasMany<MqttMessageDto>()
+            .WithMany()
+            .UsingEntity<Dictionary<string, object>>(
+                "SnapshotMqttMessage",
+                l => l.HasOne<MqttMessageDto>()
+                    .WithMany()
+                    .HasForeignKey("MqttMessageId")
+                    .OnDelete(DeleteBehavior.Restrict),
+                r => r.HasOne<SnapshotDto>()
+                    .WithMany()
+                    .HasForeignKey("SnapshotId")
+                    .OnDelete(DeleteBehavior.Cascade),
+                j =>
+                {
+                    j.HasKey("SnapshotId", "MqttMessageId");
+                    j.ToTable("SnapshotMqttMessages");
+                });
     }
 }

@@ -11,17 +11,20 @@ public class SnapshotManagerService(ISnapshotRepository snapshotRepository) : IS
         {
             Title = snapshot.Title,
             Description = snapshot.Description,
-            Messages = snapshot.Messages
+            MessageIds = snapshot.MessageIds
         };
+    
         var created = await snapshotRepository.CreateSnapshotAsync(snapshotToCreate);
-        return new SnapshotDto()
+    
+        return new SnapshotDto
         {
             Id = created.Id,
             Title = created.Title,
             Description = created.Description,
-            Messages = created.Messages.ToList()
+            MessageIds = created.MessageIds
         };
     }
+
 
     public async Task<SnapshotDto?> GetSnapshotByIdAsync(int id)
     {
@@ -46,8 +49,7 @@ public class SnapshotManagerService(ISnapshotRepository snapshotRepository) : IS
         {
             Id = updated.Id,
             Title = updated.Title,
-            Description = updated.Description,
-            Messages = updated.Messages.ToList()
+            Description = updated.Description
         };
     }
 
