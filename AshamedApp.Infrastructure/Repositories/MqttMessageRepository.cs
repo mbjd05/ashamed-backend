@@ -44,6 +44,12 @@ public class MqttMessageRepository(ApplicationDbContext dbContext) : IMqttMessag
         return mqttMessages;
     }
 
+    public async Task<MqttMessageDto> GetMqttMessageByIdAsync(int id)
+    {
+        var result = await dbContext.MqttMessages.FindAsync(id);
+        return result ?? null;
+    }
+
     private string SanitizePayload(string payload)
     {
         if (string.IsNullOrEmpty(payload))

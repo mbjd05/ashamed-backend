@@ -65,4 +65,17 @@ public class MqttController : ControllerBase
 
         return Ok(messages);
     }
+    
+    [HttpGet("message/{id}")]
+    public async Task<ActionResult<MqttMessageDto>> GetMqttMessageById(int id)
+    {
+        var message = await _mqttMessageManagerService.GetMqttMessageByIdAsync(id);
+    
+        if (message == null)
+        {
+            return NotFound(new { Message = "No message found with the provided ID." });
+        }
+
+        return Ok(message);
+    }
 }

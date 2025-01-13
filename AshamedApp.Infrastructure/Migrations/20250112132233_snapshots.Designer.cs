@@ -3,6 +3,7 @@ using System;
 using AshamedApp.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AshamedApp.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250112132233_snapshots")]
+    partial class snapshots
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.10");
@@ -26,6 +29,9 @@ namespace AshamedApp.Infrastructure.Migrations
                     b.Property<string>("Payload")
                         .HasColumnType("TEXT");
 
+                    b.Property<int?>("SnapshotDtoId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<DateTime>("Timestamp")
                         .HasColumnType("TEXT");
 
@@ -34,6 +40,8 @@ namespace AshamedApp.Infrastructure.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("SnapshotDtoId");
 
                     b.ToTable("MqttMessages");
                 });
@@ -56,34 +64,17 @@ namespace AshamedApp.Infrastructure.Migrations
                     b.ToTable("Snapshots");
                 });
 
-            modelBuilder.Entity("SnapshotMqttMessage", b =>
+            modelBuilder.Entity("AshamedApp.Application.DTOs.MqttMessageDto", b =>
                 {
-                    b.Property<int>("SnapshotId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("MqttMessageId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("SnapshotId", "MqttMessageId");
-
-                    b.HasIndex("MqttMessageId");
-
-                    b.ToTable("SnapshotMqttMessages", (string)null);
+                    b.HasOne("AshamedApp.Application.DTOs.SnapshotDto", null)
+                        .WithMany("Messages")
+                        .HasForeignKey("SnapshotDtoId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("SnapshotMqttMessage", b =>
+            modelBuilder.Entity("AshamedApp.Application.DTOs.SnapshotDto", b =>
                 {
-                    b.HasOne("AshamedApp.Application.DTOs.MqttMessageDto", null)
-                        .WithMany()
-                        .HasForeignKey("MqttMessageId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("AshamedApp.Application.DTOs.SnapshotDto", null)
-                        .WithMany()
-                        .HasForeignKey("SnapshotId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("Messages");
                 });
 #pragma warning restore 612, 618
         }
