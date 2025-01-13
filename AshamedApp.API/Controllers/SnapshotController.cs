@@ -53,7 +53,7 @@ public class SnapshotController(ISnapshotManagerService snapshotManagerService) 
         return Ok(allSnapshots);
     }
     
-    [HttpPut]
+    [HttpPut("{id}")]
     public async Task<IActionResult> UpdateSnapshot(int id, SnapshotDto snapshotDto)
     {
         if (snapshotDto == null)
