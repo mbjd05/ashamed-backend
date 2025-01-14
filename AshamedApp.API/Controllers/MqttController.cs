@@ -12,7 +12,7 @@ public class MqttController(IMqttMessageManagerService mqttMessageManagerService
     private readonly IMqttMessageManagerService _mqttMessageManagerService = mqttMessageManagerService ?? throw new ArgumentNullException(nameof(mqttMessageManagerService));
 
     // Endpoint to get all messages by topic
-    [HttpGet("topic/{topic}/messages")]
+    [HttpGet("{topic}/messages")]
     public ActionResult<GetAllMqttMessagesResponse> GetAllMqttMessages(string topic)
     {
         topic = HttpUtility.UrlDecode(topic);
@@ -25,7 +25,7 @@ public class MqttController(IMqttMessageManagerService mqttMessageManagerService
     }
 
     // Endpoint to get messages by time range
-    [HttpGet("topic/{topic}/messages-by-time-range")]
+    [HttpGet("{topic}/messages-by-time-range")]
     public async Task<IActionResult> GetMessagesByTimeRange(
         string topic, 
         [FromQuery] DateTime start, 
