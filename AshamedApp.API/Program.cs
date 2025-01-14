@@ -11,18 +11,29 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+// Load configuration files based on environment
+if (builder.Environment.IsDevelopment())
+{
+    builder.Configuration.AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: true);
+}
+else
+{
+    builder.Configuration.AddJsonFile("appsettings.Production.json", optional: true, reloadOnChange: true);
+}
 
-//Dependency Injection
+// Add services to the container.
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IMqttMessageRepository, MqttMessageRepository>();
 builder.Services.AddScoped<IMqttMessageManagerService, MqttMessageManagerService>();
 builder.Services.AddScoped<ISnapshotRepository, SnapshotRepository>();
 builder.Services.AddScoped<ISnapshotManagerService, SnapshotManagerService>();
+
+// Add DbContext with SQLite
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Register MqttClientService as a singleton
 builder.Services.AddSingleton<MqttClientService>();
 builder.Services.AddControllers();
 
@@ -44,6 +55,9 @@ builder.Services.AddCors(options =>
                 .AllowAnyMethod();
         });
 });
+
+// Add authorization services
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
