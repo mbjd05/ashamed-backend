@@ -25,8 +25,8 @@ public class MqttClientService : IDisposable
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
         // Load configuration from appsettings
-        _brokerAddress = configuration["MqttBrokerAddress"] ?? "localhost";
-        _brokerPort = int.TryParse(configuration["MqttBrokerPort"], out var port) ? port : 8883;
+        _brokerAddress = configuration["MqttSettings:MqttBrokerAddress"] ?? "localhost";
+        _brokerPort = int.TryParse(configuration["MqttSettings:MqttBrokerPort"], out var port) ? port : 8883;
 
         var mqttFactory = new MqttFactory();
         _mqttClient = mqttFactory.CreateMqttClient();
