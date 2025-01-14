@@ -10,6 +10,8 @@ using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+var environmentName = builder.Environment.EnvironmentName;
+Console.WriteLine($"The application is running in '{environmentName}' environment.");
 
 // Load configuration files based on environment
 if (builder.Environment.IsDevelopment())
