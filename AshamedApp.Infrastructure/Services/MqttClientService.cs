@@ -5,6 +5,7 @@ using AshamedApp.Application.DTOs;
 using AshamedApp.Application.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace AshamedApp.Infrastructure.Services;
 
@@ -16,11 +17,13 @@ public class MqttClientService : IDisposable
     private readonly string _brokerAddress; // Broker address dynamically loaded from config
     private readonly int _brokerPort;
     private Dictionary<string, DateTime> _lastMessageTimestamps = new Dictionary<string, DateTime>();
+    private readonly ILogger<MqttClientService> _logger;
 
-    public MqttClientService(IServiceProvider serviceProvider, IConfiguration configuration)
+    public MqttClientService(IServiceProvider serviceProvider, IConfiguration configuration, ILogger<MqttClientService> logger)
     {
         _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
-        
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+
         // Load configuration from appsettings
         _brokerAddress = configuration["MqttBrokerAddress"] ?? "localhost";
         _brokerPort = int.TryParse(configuration["MqttBrokerPort"], out var port) ? port : 8883;
@@ -39,10 +42,16 @@ public class MqttClientService : IDisposable
 
         _mqttClient.ApplicationMessageReceivedAsync += HandleReceivedMessage;
 
-        await _mqttClient.ConnectAsync(options);
-        await _mqttClient.SubscribeAsync(_topic);
-
-        Console.WriteLine($"Connected to MQTT broker at {_brokerAddress}:{_brokerPort} and subscribed to topic: {_topic}");
+        try
+        {
+            await _mqttClient.ConnectAsync(options);
+            await _mqttClient.SubscribeAsync(_topic);
+            _logger.LogInformation($"Connected to MQTT broker at {_brokerAddress}:{_brokerPort} and subscribed to topic: {_topic}");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to connect to MQTT broker.");
+        }
     }
 
     private async Task HandleReceivedMessage(MqttApplicationMessageReceivedEventArgs e)
@@ -52,27 +61,28 @@ public class MqttClientService : IDisposable
         using var scope = _serviceProvider.CreateScope();
         var messageManagerService = scope.ServiceProvider.GetRequiredService<IMqttMessageManagerService>();
         var currentTime = DateTime.UtcNow;
-    
+
         MqttMessageDto messageToSave = new()
         {
             Topic = e.ApplicationMessage.Topic,
             Payload = payload,
             Timestamp = currentTime,
         };
-    
+
         if (!_lastMessageTimestamps.TryGetValue(e.ApplicationMessage.Topic, out DateTime lastTimestamp))
         {
             var lastMessage = messageManagerService.GetLastMqttMessage(e.ApplicationMessage.Topic);
             lastTimestamp = lastMessage.Timestamp;
             _lastMessageTimestamps[e.ApplicationMessage.Topic] = lastTimestamp;
         }
-    
+
         var timeSinceLastMessage = currentTime - lastTimestamp;
-    
+
         if (lastTimestamp == default || timeSinceLastMessage >= TimeSpan.FromMinutes(10))
         {
             await messageManagerService.AddMessageAsync(messageToSave);
             _lastMessageTimestamps[e.ApplicationMessage.Topic] = currentTime;
+            _logger.LogInformation($"Saved message from topic {e.ApplicationMessage.Topic} at {currentTime}");
         }
     }
 
@@ -90,6 +100,7 @@ public class MqttClientService : IDisposable
             .Build();
 
         await _mqttClient.PublishAsync(applicationMessage);
+        _logger.LogInformation($"Published message to topic {_topic}: {message}");
     }
 
     public void Dispose()
