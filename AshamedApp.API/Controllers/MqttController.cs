@@ -6,25 +6,17 @@ using System.Web; // Required for UrlDecode
 namespace AshamedApp.API.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
-public class MqttController : ControllerBase
+[Route("api/mqtt")]
+public class MqttController(IMqttMessageManagerService mqttMessageManagerService) : ControllerBase
 {
-    private readonly IMqttMessageManagerService _mqttMessageManagerService;
-
-    public MqttController(IMqttMessageManagerService mqttMessageManagerService)
-    {
-        _mqttMessageManagerService = mqttMessageManagerService ?? throw new ArgumentNullException(nameof(mqttMessageManagerService));
-    }
+    private readonly IMqttMessageManagerService _mqttMessageManagerService = mqttMessageManagerService ?? throw new ArgumentNullException(nameof(mqttMessageManagerService));
 
     // Endpoint to get all messages by topic
-    [HttpGet("messages/all/{topic}")]
+    [HttpGet("topic/{topic}/messages")]
     public ActionResult<GetAllMqttMessagesResponse> GetAllMqttMessages(string topic)
     {
-        // Decode the URL-encoded topic
         topic = HttpUtility.UrlDecode(topic);
-
         var response = _mqttMessageManagerService.GetAllMqttMessages(topic);
-
         if (!response.MqttMessages.Any())
         {
             return NotFound(new { Message = "No messages found for this topic" });
@@ -33,23 +25,13 @@ public class MqttController : ControllerBase
     }
 
     // Endpoint to get messages by time range
-    [HttpGet("messages")]
+    [HttpGet("topic/{topic}/messages-by-time-range")]
     public async Task<IActionResult> GetMessagesByTimeRange(
-        [FromQuery] string topic, 
+        string topic, 
         [FromQuery] DateTime start, 
         [FromQuery] DateTime end)
     {
-        // Decode the URL-encoded topic
-        if (!string.IsNullOrWhiteSpace(topic))
-        {
-            topic = HttpUtility.UrlDecode(topic);
-        }
-        
-        if (string.IsNullOrWhiteSpace(topic))
-        {
-            return BadRequest(new { Message = "Topic parameter is required." });
-        }
-        
+        topic = HttpUtility.UrlDecode(topic);
         var topicExists = _mqttMessageManagerService.GetAllMqttMessages(topic).MqttMessages.Any();
         if (!topicExists)
         {
@@ -57,25 +39,21 @@ public class MqttController : ControllerBase
         }
         
         var messages = await _mqttMessageManagerService.GetMessagesFromDbByTimeRangeAsync(topic, start, end);
-
         if (!messages.Any())
         {
             return NotFound(new { Message = "No messages found for this topic within the specified time range." });
         }
-
         return Ok(messages);
     }
     
-    [HttpGet("message/{id}")]
+    [HttpGet("messages/{id}")]
     public async Task<ActionResult<MqttMessageDto>> GetMqttMessageById(int id)
     {
         var message = await _mqttMessageManagerService.GetMqttMessageByIdAsync(id);
-    
         if (message == null)
         {
             return NotFound(new { Message = "No message found with the provided ID." });
         }
-
         return Ok(message);
     }
 }

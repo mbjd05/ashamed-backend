@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace AshamedApp.API.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/snapshots")]
 public class SnapshotController(ISnapshotManagerService snapshotManagerService) : ControllerBase
 {
     [HttpPost]
@@ -14,7 +14,7 @@ public class SnapshotController(ISnapshotManagerService snapshotManagerService) 
         try
         {
             var created = await snapshotManagerService.CreateSnapshotAsync(snapshot);
-            return Ok(created);
+            return CreatedAtAction(nameof(GetSnapshotByIdAsync), new { id = created.Id }, created);
         }
         catch (KeyNotFoundException ex)
         {
@@ -67,10 +67,7 @@ public class SnapshotController(ISnapshotManagerService snapshotManagerService) 
             return NotFound(new { Message = $"Snapshot with ID {id} not found." });
         }
         
-        existingSnapshot.Title = snapshotDto.Title;
-        existingSnapshot.Description = snapshotDto.Description;
         var updatedSnapshot = await snapshotManagerService.UpdateSnapshotAsync(id, snapshotDto.Title, snapshotDto.Description);
-
         return Ok(updatedSnapshot);
     }
     
