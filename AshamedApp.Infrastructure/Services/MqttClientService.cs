@@ -2,9 +2,9 @@ using MQTTnet;
 using MQTTnet.Client;
 using System.Text;
 using AshamedApp.Application.DTOs;
-using AshamedApp.Application.Repositories;
 using AshamedApp.Application.Services;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
 
 namespace AshamedApp.Infrastructure.Services;
 
@@ -13,13 +13,18 @@ public class MqttClientService : IDisposable
     private readonly IMqttClient _mqttClient;
     private readonly IServiceProvider _serviceProvider; // To create a scope for scoped services
     private readonly string _topic = "z2m/air-monitor";
-    private readonly string _brokerAddress = "localhost";
-    private readonly int _brokerPort = 8883;
+    private readonly string _brokerAddress; // Broker address dynamically loaded from config
+    private readonly int _brokerPort;
     private Dictionary<string, DateTime> _lastMessageTimestamps = new Dictionary<string, DateTime>();
 
-    public MqttClientService(IServiceProvider serviceProvider)
+    public MqttClientService(IServiceProvider serviceProvider, IConfiguration configuration)
     {
         _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
+        
+        // Load configuration from appsettings
+        _brokerAddress = configuration["MqttBrokerAddress"] ?? "localhost";
+        _brokerPort = int.TryParse(configuration["MqttBrokerPort"], out var port) ? port : 8883;
+
         var mqttFactory = new MqttFactory();
         _mqttClient = mqttFactory.CreateMqttClient();
     }
@@ -37,7 +42,7 @@ public class MqttClientService : IDisposable
         await _mqttClient.ConnectAsync(options);
         await _mqttClient.SubscribeAsync(_topic);
 
-        Console.WriteLine("Connected to MQTT broker and subscribed to topic: " + _topic);
+        Console.WriteLine($"Connected to MQTT broker at {_brokerAddress}:{_brokerPort} and subscribed to topic: {_topic}");
     }
 
     private async Task HandleReceivedMessage(MqttApplicationMessageReceivedEventArgs e)
@@ -70,7 +75,6 @@ public class MqttClientService : IDisposable
             _lastMessageTimestamps[e.ApplicationMessage.Topic] = currentTime;
         }
     }
-
 
     public async Task PublishMessageAsync(string message)
     {

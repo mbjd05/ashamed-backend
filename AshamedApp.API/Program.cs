@@ -12,9 +12,6 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-
-//Dependency Injection
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IMqttMessageRepository, MqttMessageRepository>();
@@ -50,17 +47,21 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    // Development configuration
     app.UseSwagger();
     app.UseSwaggerUI();
+    builder.Configuration.AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: true);
 }
 else
 {
+    // Production configuration
     app.UseSwagger();
     app.UseSwaggerUI(options =>
     {
         options.SwaggerEndpoint("/swagger/v1/swagger.json", "API Documentation V1");
         options.RoutePrefix = "docs";
     });
+    builder.Configuration.AddJsonFile("appsettings.Production.json", optional: true, reloadOnChange: true);
 }
 
 app.UseHttpsRedirection();
@@ -82,4 +83,5 @@ app.UseAuthorization();
 
 app.MapControllers();
 app.Urls.Add("https://+:443");
+
 app.Run();
